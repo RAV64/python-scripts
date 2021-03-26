@@ -4,12 +4,12 @@ from PIL import Image
 from random import random, randint
 import glob
 
-
 IMG_WIDTH = 256
 IMG_HEIGHT = IMG_WIDTH
 A = 20
 f = 0
 imgNum = 0
+
 
 def emptyImg():
     eImg = []
@@ -17,6 +17,7 @@ def emptyImg():
         for pixel in range(IMG_WIDTH):
             eImg.append([0, 0, 0])
     generateImage(eImg)
+
 
 def bwAlpha():
     img = list()
@@ -29,33 +30,33 @@ def bwAlpha():
                 newPixel = [0, 255, ri]
 
             img.append(newPixel)
-            #if row == 0:
-                #generateImage(img)
+            # if row == 0:
+            # generateImage(img)
     generateImage(img)
     return img
 
-def beaching(img):
 
+def beaching(img):
     for pixel in range(len(img)):
 
         p = 0
-        if (pixel - (IMG_WIDTH-1)) < 0:
+        if (pixel - (IMG_WIDTH - 1)) < 0:
             p += 1 if random() < 0.15 else 0
         else:
-            p += 1 if (img[pixel][0] != img[pixel-1][0]) else 0
-            p += 1 if (img[pixel][0] != img[pixel-IMG_WIDTH][0]) else 0
-            p += 1 if (img[pixel][0] != img[pixel-IMG_WIDTH-1][0]) else 0
-            p += 1 if (img[pixel][0] != img[pixel-IMG_WIDTH+1][0]) else 0
-        if (pixel + (IMG_WIDTH+1)) < len(img):
-            p += 1 if (img[pixel][0] != img[pixel+1][0]) else 0
-            p += 1 if (img[pixel][0] != img[pixel+IMG_WIDTH][0]) else 0
-            p += 1 if (img[pixel][0] != img[pixel+IMG_WIDTH-1][0]) else 0
-            p += 1 if (img[pixel][0] != img[pixel+IMG_WIDTH+1][0]) else 0
+            p += 1 if (img[pixel][0] != img[pixel - 1][0]) else 0
+            p += 1 if (img[pixel][0] != img[pixel - IMG_WIDTH][0]) else 0
+            p += 1 if (img[pixel][0] != img[pixel - IMG_WIDTH - 1][0]) else 0
+            p += 1 if (img[pixel][0] != img[pixel - IMG_WIDTH + 1][0]) else 0
+        if (pixel + (IMG_WIDTH + 1)) < len(img):
+            p += 1 if (img[pixel][0] != img[pixel + 1][0]) else 0
+            p += 1 if (img[pixel][0] != img[pixel + IMG_WIDTH][0]) else 0
+            p += 1 if (img[pixel][0] != img[pixel + IMG_WIDTH - 1][0]) else 0
+            p += 1 if (img[pixel][0] != img[pixel + IMG_WIDTH + 1][0]) else 0
         else:
             p += 1 if random() < 0.15 else 0
         if p >= 1:
             img[pixel][2] = 1
-        
+
         generateImage(img)
     return img
 
@@ -65,99 +66,98 @@ def smoothAlpha(img, times=4):
 
         newImg = list()
         for pixel in range(len(img)):
-            
+
             p, lp, rp, tp, bp = 1, 0, 0, 0, 0
-            
+
             # left pixel value
             if pixel % IMG_WIDTH != 0:
-                lp = img[pixel-1][2]
+                lp = img[pixel - 1][2]
                 p += 1
-                
+
             # right pixel value
-            if (pixel+1) % IMG_WIDTH != 0:
-                rp = img[pixel+1][2]
+            if (pixel + 1) % IMG_WIDTH != 0:
+                rp = img[pixel + 1][2]
                 p += 1
-                
+
             # top pixel value
-            if (pixel-IMG_WIDTH) > (-1):
-                tp = img[pixel-IMG_WIDTH][2]
+            if (pixel - IMG_WIDTH) > (-1):
+                tp = img[pixel - IMG_WIDTH][2]
                 p += 1
-                
+
             # bottom pixel value
-            if pixel+IMG_WIDTH < len(img):
-                bp = img[pixel+IMG_WIDTH][2]
+            if pixel + IMG_WIDTH < len(img):
+                bp = img[pixel + IMG_WIDTH][2]
                 p += 1
-                
-                
+
             if img[pixel][0] == 255:
                 alpha = ((img[pixel][2]
-                        +lp
-                        +rp
-                        +tp
-                        +bp)/p)
+                          + lp
+                          + rp
+                          + tp
+                          + bp) / p)
                 if (alpha - A) <= 0:
                     alpha = 1
                 img[pixel] = [255, 0, alpha]
             elif img[pixel][0] == 0:
                 alpha = ((img[pixel][2]
-                        +lp
-                        +rp
-                        +tp
-                        +bp)/p)
+                          + lp
+                          + rp
+                          + tp
+                          + bp) / p)
                 if (alpha - A) <= 0:
                     alpha = 1
                 img[pixel] = [0, 255, alpha]
 
-            
             generateImage(img)
         img = rotateImgArr(img)
 
     return img
 
+
 def deScatter(img, times=4):
-    
     for time in range(times):
         for pixel in range(len(img)):
 
-                p = 0
-                if (pixel - (IMG_WIDTH-1)) < 0:
-                    p += randint(0, 4)
-                else:
-                    p += 1 if (img[pixel][0] != img[pixel-1][0]) else 0
-                    p += 1 if (img[pixel][0] != img[pixel-IMG_WIDTH][0]) else 0
-                    p += 1 if (img[pixel][0] != img[pixel-IMG_WIDTH-1][0]) else 0
-                    p += 1 if (img[pixel][0] != img[pixel-IMG_WIDTH+1][0]) else 0
-                if (pixel + (IMG_WIDTH+1)) < len(img):
-                    p += 1 if (img[pixel][0] != img[pixel+1][0]) else 0
-                    p += 1 if (img[pixel][0] != img[pixel+IMG_WIDTH][0]) else 0
-                    p += 1 if (img[pixel][0] != img[pixel+IMG_WIDTH-1][0]) else 0
-                    p += 1 if (img[pixel][0] != img[pixel+IMG_WIDTH+1][0]) else 0
-                else:
-                    p += randint(0, 4)
-                    
-                if p >= 5:
-                    if img[pixel][0] == 0:
-                        img[pixel][0] = 255
-                        img[pixel][1] = 0
-                    elif img[pixel][0] == 255:
-                        img[pixel][0] = 0
-                        img[pixel][1] = 255
-                        
-                generateImage(img)
+            p = 0
+            if (pixel - (IMG_WIDTH - 1)) < 0:
+                p += randint(0, 4)
+            else:
+                p += 1 if (img[pixel][0] != img[pixel - 1][0]) else 0
+                p += 1 if (img[pixel][0] != img[pixel - IMG_WIDTH][0]) else 0
+                p += 1 if (img[pixel][0] != img[pixel - IMG_WIDTH - 1][0]) else 0
+                p += 1 if (img[pixel][0] != img[pixel - IMG_WIDTH + 1][0]) else 0
+            if (pixel + (IMG_WIDTH + 1)) < len(img):
+                p += 1 if (img[pixel][0] != img[pixel + 1][0]) else 0
+                p += 1 if (img[pixel][0] != img[pixel + IMG_WIDTH][0]) else 0
+                p += 1 if (img[pixel][0] != img[pixel + IMG_WIDTH - 1][0]) else 0
+                p += 1 if (img[pixel][0] != img[pixel + IMG_WIDTH + 1][0]) else 0
+            else:
+                p += randint(0, 4)
+
+            if p >= 5:
+                if img[pixel][0] == 0:
+                    img[pixel][0] = 255
+                    img[pixel][1] = 0
+                elif img[pixel][0] == 255:
+                    img[pixel][0] = 0
+                    img[pixel][1] = 255
+
+            generateImage(img)
         img = rotateImgArr(img)
 
     return img
 
-def rotateImgArr(imgArr, debug = True):
+
+def rotateImgArr(imgArr, debug=True):
     if debug:
         rotImg = list()
         for n in range(IMG_HEIGHT):
-            rotImg.append(imgArr[IMG_WIDTH-n-1::IMG_WIDTH])
+            rotImg.append(imgArr[IMG_WIDTH - n - 1::IMG_WIDTH])
         imgArr = [item for l in rotImg for item in l]
     return imgArr
 
+
 def colorize(img):
-    
     for pixel in range(len(img)):
         if img[pixel][0] == 255 and img[pixel][2] >= 110:
             img[pixel] = [39, 71, 144]
@@ -183,44 +183,45 @@ def colorize(img):
             img[pixel] = [40, 20, 0]
         else:
             img[pixel] = [0, 0, 0]
-            
+
         generateImage(img)
-        
+
     return img
+
 
 def biggerIslands(img, times=1):
     for time in range(times):
         for pixel in range(len(img)):
 
             p = 0
-            if (pixel - (IMG_WIDTH-1)) < 0:
+            if (pixel - (IMG_WIDTH - 1)) < 0:
                 p += 1 if random() < 0.15 else 0
             else:
-                p += 1 if (img[pixel][0] != img[pixel-1][0]) else 0
-                p += 1 if (img[pixel][0] != img[pixel-IMG_WIDTH][0]) else 0
-                p += 1 if (img[pixel][0] != img[pixel-IMG_WIDTH-1][0]) else 0
-                p += 1 if (img[pixel][0] != img[pixel-IMG_WIDTH+1][0]) else 0
-            if (pixel + (IMG_WIDTH+1)) < len(img):
-                p += 1 if (img[pixel][0] != img[pixel+1][0]) else 0
-                p += 1 if (img[pixel][0] != img[pixel+IMG_WIDTH][0]) else 0
-                p += 1 if (img[pixel][0] != img[pixel+IMG_WIDTH-1][0]) else 0
-                p += 1 if (img[pixel][0] != img[pixel+IMG_WIDTH+1][0]) else 0
+                p += 1 if (img[pixel][0] != img[pixel - 1][0]) else 0
+                p += 1 if (img[pixel][0] != img[pixel - IMG_WIDTH][0]) else 0
+                p += 1 if (img[pixel][0] != img[pixel - IMG_WIDTH - 1][0]) else 0
+                p += 1 if (img[pixel][0] != img[pixel - IMG_WIDTH + 1][0]) else 0
+            if (pixel + (IMG_WIDTH + 1)) < len(img):
+                p += 1 if (img[pixel][0] != img[pixel + 1][0]) else 0
+                p += 1 if (img[pixel][0] != img[pixel + IMG_WIDTH][0]) else 0
+                p += 1 if (img[pixel][0] != img[pixel + IMG_WIDTH - 1][0]) else 0
+                p += 1 if (img[pixel][0] != img[pixel + IMG_WIDTH + 1][0]) else 0
             else:
                 p += 1 if random() < 0.15 else 0
             if p >= 5:
                 img[pixel][0] = 254
                 img[pixel][1] = 254
-            
+
             generateImage(img)
-        
+
     for pixel in range(len(img)):
         if img[pixel][0] == 254:
             img[pixel][0] = 0
             img[pixel][1] = 255
     return img
-            
-def generateImage(img, fin=False, debug=False, debugFIN=False):
 
+
+def generateImage(img, fin=False, debug=False, debugFIN=False):
     global f
     global imgNum
     f += 1
@@ -228,7 +229,7 @@ def generateImage(img, fin=False, debug=False, debugFIN=False):
         if debugFIN:
             new = []
             for i in range(0, len(img), IMG_WIDTH):
-                new.append(img[i : i+IMG_WIDTH])
+                new.append(img[i: i + IMG_WIDTH])
             imgNum += 1
             array = np.asarray(new)
             array = array.astype(np.uint8)
@@ -236,8 +237,9 @@ def generateImage(img, fin=False, debug=False, debugFIN=False):
 
             new.save(f"noiseGIF/noise_{'0' * (4 - len(str(imgNum)))}{imgNum}.png")
             new.save("noiselive.png")
-    
+
             return new
+
 
 def makeGif():
     fp_in = "noiseGIF/noise_*.png"
@@ -245,12 +247,14 @@ def makeGif():
 
     img, *imgs = [Image.open(f) for f in sorted(glob.glob(fp_in))]
     img.save(fp=fp_out, format='GIF', version='GIF89a', append_images=imgs,
-            save_all=True, duration=100, loop=0)
+             save_all=True, duration=100, loop=0)
+
 
 def clearFolder():
     files = glob.glob('noiseGIF/*')
     for f in files:
         os.remove(f)
+
 
 if __name__ == "__main__":
     emptyImg()
