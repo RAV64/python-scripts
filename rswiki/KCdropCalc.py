@@ -21,30 +21,9 @@ def initialize(monster):
 
 def getItems(membersItems, nonmembersItems):
     dropDict = {}
+    items = zip(membersItems, nonmembersItems)
     n = 0
-    for n, item in enumerate(membersItems):
-        newItem = []
-        noted = [0]
-        for what in item:
-            for x in what.descendants:
-                if str(x)[0] != "<" and str(x)[0] != "[" and str(x)[0] != ";" and str(x)[0] != "–":
-                    if str(x)[0] == "(":
-                        noted = [1]
-                    else:
-                        newItem.append(str(x))
-
-        if len(newItem) == 6:
-            del newItem[3]
-
-        dropDict[n] = {}
-        dropDict[n]["itemName"] = newItem[0]
-        dropDict[n]["dropAmount"] = newItem[1]
-        dropDict[n]["dropRate"] = newItem[2]
-        dropDict[n]["itemValue"] = newItem[3]
-        dropDict[n]["alchPrice"] = newItem[4]
-        dropDict[n]["noted"] = noted
-
-    for n, item in enumerate(nonmembersItems, n):
+    for n, item in enumerate(items):
         newItem = []
         noted = [0]
         for what in item:
@@ -120,13 +99,6 @@ def fixDropDict(dropDict):
             dropDict[drop]["unitPrice"] = [0]
 
         dropDict[drop]["itemName"] = dropDict[drop]["itemName"] + "_" + str(dropDict[drop]["dropAmount"][0])
-
-    # Remove Duplicates
-    """for drop in dropDict:
-        for check in dropDict:
-            if dropDict[drop]["itemName"] == dropDict[check]["itemName"]:
-                if drop != check:
-                    del dropDict[check]"""
 
     return dropDict
 
